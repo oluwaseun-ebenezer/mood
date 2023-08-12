@@ -4,8 +4,8 @@ import Button from "@/components/Button";
 import Title from "@/components/Title";
 import axios from "axios";
 import { useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
 import ReactPlayer from "react-player";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function Video() {
@@ -100,7 +100,7 @@ export default function Video() {
           {result && (
             <table className="text-xl table-auto w-full my-6">
               <tbody>
-                <tr className="border border-black">
+                {/* <tr className="border border-black">
                   <th className="w-1/2 text-left px-8">Engagement</th>
                   <td className="w-1/2 font-medium text-right py-2 px-8">
                     {result.engaged_percent} of {result.sum_inference}
@@ -132,6 +132,20 @@ export default function Video() {
                   <th className="w-1/2 text-left px-8">Distraction</th>
                   <td className="w-1/2 font-medium text-right py-2 px-8">
                     {result.distracted_percent} of {result.sum_inference}
+                  </td>
+                </tr> */}
+
+                <tr className="border border-black">
+                  <th className="w-1/2 text-left px-8">Attentive Eyes</th>
+                  <td className="w-1/2 font-medium text-right py-2 px-8">
+                    {result.attentive_count} of {result.total_count}
+                  </td>
+                </tr>
+
+                <tr className="border border-black">
+                  <th className="w-1/2 text-left px-8">Drowsy Eyes</th>
+                  <td className="w-1/2 font-medium text-right py-2 px-8">
+                    {result.drowsy_count} of {result.total_count}
                   </td>
                 </tr>
               </tbody>
