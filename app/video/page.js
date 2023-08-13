@@ -30,6 +30,14 @@ export default function Video() {
       await axios
         .post("http://localhost:8000/", formData)
         .then((res) => {
+          if (res.data.data.drowsy_count > res.data.data.attentive_count) {
+            res.data.message = "Students were less engaged";
+          } else if (
+            res.data.data.attentive_count > res.data.data.drowsy_count
+          ) {
+            res.data.data.message = "Students were engaged";
+          }
+
           setResult(res.data);
         })
         .catch((error) => {
@@ -103,7 +111,7 @@ export default function Video() {
         {result.status === "success" && (
           <div className="grid grid-cols-3 gap-8 w-full">
             <div className="flex items-center justify-center">
-              <Success />
+              <Success text={result.data.message} />
             </div>
 
             <table className="col-span-2 text-xl table-auto w-full">

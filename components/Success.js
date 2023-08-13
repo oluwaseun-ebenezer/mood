@@ -1,6 +1,6 @@
-const Success = () => {
+const Success = ({ text }) => {
   return (
-    <div className="inline gap-12 p-8 text-xl font-bold text-green-800 bg-green-800 bg-opacity-10 rounded-3xl">
+    <div className="flex flex-col items-center gap-2 p-8 text-xl font-bold text-green-800 bg-green-800 bg-opacity-10 rounded-3xl">
       <svg
         width="76"
         height="76"
@@ -13,6 +13,8 @@ const Success = () => {
           className="fill-green-800"
         />
       </svg>
+
+      <p className="text-center">{text}</p>
     </div>
   );
 };
