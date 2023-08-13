@@ -31,7 +31,7 @@ export default function Video() {
         .post("http://localhost:8000/", formData)
         .then((res) => {
           if (res.data.data.drowsy_count > res.data.data.attentive_count) {
-            res.data.message = "Students were less engaged";
+            res.data.data.message = "Students were less engaged";
           } else if (
             res.data.data.attentive_count > res.data.data.drowsy_count
           ) {
