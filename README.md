@@ -2,7 +2,24 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
-First, run the development server:
+### Strapi setup
+
+Run `npx create-strapi-app@latest my-project --quickstart`.
+Pick recommended actions in the setup process.
+
+### ENV setup
+
+Create a .env file with these variables.
+Note: `MGT_BACKEND` serves as the User management endpoint
+
+```txt
+BACKEND=http://localhost:8000
+MGT_BACKEND=http://127.0.0.1:1337/api
+```
+
+### Finally,
+
+Then, run the development server:
 
 ```bash
 npm run dev
