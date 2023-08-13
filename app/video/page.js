@@ -33,7 +33,7 @@ export default function Video() {
           if (res.data.data.total_count) {
             const score =
               (res.data.data.attentive_count / res.data.data.total_count) * 100;
-            if (score < 50) {
+            if (score < 40) {
               res.data.data.message =
                 "The engagement level is low amongst the students";
             } else {
