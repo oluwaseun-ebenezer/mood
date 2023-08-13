@@ -30,6 +30,25 @@ export default function Video() {
       await axios
         .post("http://localhost:8000/", formData)
         .then((res) => {
+          if (res.data.data.total_count) {
+            const score =
+              res.data.data.drowsy_count / res.data.data.total_count / 100;
+            if (score < 50) {
+              res.data.data.message =
+                "The engagement level is low amongst the students";
+            } else {
+              if (score > 60) {
+                res.data.data.message =
+                  "The engagement level is high amongst the students";
+              } else {
+                res.data.data.message =
+                  "The engagement level is medium amongst the students";
+              }
+            }
+          } else {
+            res.data.data.message =
+              "The engagement level is low amongst the students";
+          }
           if (res.data.data.drowsy_count > res.data.data.attentive_count) {
             res.data.data.message = "Students were less engaged";
           } else if (
