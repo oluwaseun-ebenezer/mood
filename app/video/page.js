@@ -2,19 +2,18 @@
 
 import Button from "@/components/Button";
 import Title from "@/components/Title";
-import axios from "axios";
-import { useState } from "react";
+import Success from "@/components/Success";
+import Error from "@/components/Error";
+import { useStatusProvider } from "@/providers/status";
+import { useEffect, useState } from "react";
 import ReactPlayer from "react-player";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
 
 export default function Video() {
-  const [fileSelected, setFileSelected] = useState(null);
-  const [videoUrl, setVideoUrl] = useState(null);
-  const [result, setResult] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useStatusProvider();
 
-  const notify = (text) => toast(text);
+  const [fileSelected, setFileSelected] = useState(null);
+  const [result, setResult] = useState({ status: "init", data: null });
 
   const onFileChange = (event) => {
     setFileSelected(event.target.files[0]);
@@ -22,7 +21,8 @@ export default function Video() {
 
   const onFileUpload = async () => {
     if (fileSelected) {
-      setLoading(true);
+      setResult({ status: "init", data: null });
+      setStatus(true);
 
       const formData = new FormData();
       formData.append("video", fileSelected, fileSelected.name);
@@ -30,17 +30,13 @@ export default function Video() {
       await axios
         .post("http://localhost:8000/", formData)
         .then((res) => {
-          setVideoUrl(res.data.data.result);
-
-          setResult(res.data.data);
+          setResult(res.data);
         })
         .catch((error) => {
-          console.log(error.response?.data?.message);
-          notify(error.response?.data?.message ?? "Error processing request");
-          console.log(error);
+          setResult({ status: "error" });
         });
 
-      setLoading(false);
+      setStatus(false);
     }
   };
 
@@ -48,57 +44,69 @@ export default function Video() {
     document.getElementById("fileUpload").click();
   };
 
+  useEffect(() => {
+    setStatus(false);
+
+    return () => {
+      setStatus(false);
+    };
+  }, []);
+
   return (
-    <main className="grid grid-cols-12 min-h-screen">
-      <div className="col-span-3 bg-primary"></div>
-      <div className="col-span-9 overflow-y-auto py-14 px-20 px- space-y-14">
-        <Title text="Upload the classroom video to generate an engagement report" />
+    <>
+      <Title text="Upload the classroom video to generate an engagement report" />
 
-        <div className="grid grid-cols-12 gap-4">
-          <div className="col-span-5 outline-dashed p-4 rounded-xl">
-            <div className="flex items-center justify-center p-20">
-              <input
-                type="file"
-                id="fileUpload"
-                className="hidden"
-                onChange={onFileChange}
-              />
+      <div className="grid grid-cols-12 gap-4">
+        <div className="col-span-5 outline-dashed p-4 rounded-xl">
+          <div className="flex items-center justify-center p-20">
+            <input
+              type="file"
+              accept=".mp4"
+              id="fileUpload"
+              className="hidden"
+              onChange={onFileChange}
+            />
 
-              <Button text="Browse Video" handler={handleFileUploadClick} />
-            </div>
-
-            <p className="text-center">{fileSelected?.name}</p>
+            <Button text="Browse Video" handler={handleFileUploadClick} />
           </div>
 
-          <div className="col-span-2 m-auto">
-            <Button text="Upload" handler={onFileUpload} bg="bg-secondary" />
-          </div>
-
-          <div className="col-span-5 outline-double h-72">
-            {videoUrl && (
-              <ReactPlayer
-                url={`http://localhost:8000/stream/${videoUrl}`}
-                width="100%"
-                height="100%"
-                controls={true}
-                playing={true}
-                muted={true}
-              />
-            )}
-          </div>
+          <p className="text-center">{fileSelected?.name}</p>
         </div>
 
-        <hr className="border border-black" />
+        <div className="col-span-2 m-auto">
+          <Button text="Upload" handler={onFileUpload} bg="bg-secondary" />
+        </div>
 
-        <div className="flex justify-center px-48 relative">
-          {loading && (
-            <div className="w-full h-full absolute flex justify-center items-center py-24 bg-gray-200 bg-opacity-60">
-              <span class="animate-ping absolute inline-flex h-10 w-10 rounded-full bg-secondary opacity-75"></span>
-            </div>
+        <div className="col-span-5 outline-double h-72">
+          {result.status == "success" && (
+            <ReactPlayer
+              url={`http://localhost:8000/stream/${result.data.result}`}
+              width="100%"
+              height="100%"
+              controls={true}
+              playing={true}
+              muted={true}
+            />
           )}
+        </div>
+      </div>
 
-          {result && (
-            <table className="text-xl table-auto w-full my-6">
+      <hr className="border border-black" />
+
+      <div className="flex justify-center relative">
+        {status && (
+          <div className="w-full h-full absolute flex justify-center items-center py-24 bg-gray-200 bg-opacity-60">
+            <span className="animate-ping absolute inline-flex h-10 w-10 rounded-full bg-secondary opacity-75"></span>
+          </div>
+        )}
+
+        {result.status === "success" && (
+          <div className="grid grid-cols-3 gap-8 w-full">
+            <div className="flex items-center justify-center">
+              <Success />
+            </div>
+
+            <table className="col-span-2 text-xl table-auto w-full">
               <tbody>
                 {/* <tr className="border border-black">
                   <th className="w-1/2 text-left px-8">Engagement</th>
@@ -138,23 +146,23 @@ export default function Video() {
                 <tr className="border border-black">
                   <th className="w-1/2 text-left px-8">Attentive Eyes</th>
                   <td className="w-1/2 font-medium text-right py-2 px-8">
-                    {result.attentive_count} of {result.total_count}
+                    {result.data.attentive_count} of {result.data.total_count}
                   </td>
                 </tr>
 
                 <tr className="border border-black">
                   <th className="w-1/2 text-left px-8">Drowsy Eyes</th>
                   <td className="w-1/2 font-medium text-right py-2 px-8">
-                    {result.drowsy_count} of {result.total_count}
+                    {result.data.drowsy_count} of {result.data.total_count}
                   </td>
                 </tr>
               </tbody>
             </table>
-          )}
-        </div>
+          </div>
+        )}
 
-        <ToastContainer />
+        {result.status === "error" && <Error text="Error processing request" />}
       </div>
-    </main>
+    </>
   );
 }

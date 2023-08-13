@@ -1,5 +1,8 @@
 import "./globals.css";
 import { Inter } from "next/font/google";
+import { StatusProvider } from "@/providers/status";
+import { AuthProvider } from "@/providers/auth";
+import Logout from "@/components/logout";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -10,10 +13,23 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body className={`${inter.className} max-w-[2500px] m-auto`}>
-        {children}
-      </body>
-    </html>
+    <AuthProvider>
+      <StatusProvider>
+        <html lang="en">
+          <body className={`${inter.className} max-w-[2500px] m-auto`}>
+            <main className="grid grid-cols-12 min-h-screen">
+              <div className="col-span-3 bg-primary">
+                <div className="p-4">
+                  <Logout />
+                </div>
+              </div>
+              <div className="col-span-9 h-screen overflow-auto py-14 px-20 px- space-y-14">
+                {children}
+              </div>
+            </main>
+          </body>
+        </html>
+      </StatusProvider>
+    </AuthProvider>
   );
 }
