@@ -32,7 +32,7 @@ export default function Video() {
         .then((res) => {
           if (res.data.data.total_count) {
             const score =
-              res.data.data.drowsy_count / res.data.data.total_count / 100;
+              (res.data.data.drowsy_count / res.data.data.total_count) * 100;
             if (score < 50) {
               res.data.data.message =
                 "The engagement level is low amongst the students";
